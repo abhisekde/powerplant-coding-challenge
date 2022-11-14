@@ -43,7 +43,7 @@ Where the file `powerplant.data` contains powerplant information in JSON format
 <br>
 
 ## Algorithm
-Calculate the net efficiency by cnsidering the efficiency and wind%
+Calculate the net price by cnsidering the fuel efficiency 
 
 Calculate the power production price/MWH as per the net efficiency
 
