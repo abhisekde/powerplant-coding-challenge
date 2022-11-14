@@ -59,16 +59,26 @@ class MeritPlan:
         # If control reach here - All OK
 
     def __stage(self):
+        # Calculation basis - Efficiency used the fuel cost
+        # For sources equal to windpower, the efficiency is alway 1
         self.power_plants['net_efficiency'] = self.power_plants['efficiency'] * self.power_plants['wind_percent']
         self.power_plants['eur_net_fuel_per_mwh'] = self.power_plants['eur_fuel_per_mwh'] / self.power_plants['net_efficiency']
         self.power_plants = self.power_plants.fillna(0)
-        self.power_plants['eur_net_per_mwh'] = self.power_plants['eur_net_fuel_per_mwh'] + self.power_plants['eur_co2_em_per_mwh']
-        self.power_plants['net_max_mwh'] = self.power_plants['pmax'] * self.power_plants['net_efficiency']
-        self.power_plants['net_min_mwh'] = self.power_plants['pmin'] * self.power_plants['net_efficiency']
-        unit_mwh = 0.1
-        self.power_plants['max_units'] = self.power_plants['net_max_mwh'] / unit_mwh
-        self.power_plants['min_units'] = self.power_plants['net_min_mwh'] / unit_mwh
-        self.power_plants['target_units'] = self.power_plants['target_mwh'] / unit_mwh
+
+        # Calculation basis - Efficiency used the power output
+        # self.power_plants['eur_net_per_mwh'] = self.power_plants['eur_net_fuel_per_mwh'] + self.power_plants['eur_co2_em_per_mwh']
+        # self.power_plants['net_max_mwh'] = self.power_plants['pmax'] * self.power_plants['net_efficiency']
+        # self.power_plants['net_min_mwh'] = self.power_plants['pmin'] * self.power_plants['net_efficiency']
+
+        # For fuel sources other than windpower, the wind_percent is alway 1
+        self.power_plants['net_max_mwh'] = self.power_plants['pmax'] * self.power_plants['wind_percent']
+        self.power_plants['net_min_mwh'] = self.power_plants['pmin'] * self.power_plants['wind_percent']
+        self.power_plants['eur_net_per_mwh'] = (self.power_plants['eur_net_fuel_per_mwh'] / self.power_plants['efficiency']) + self.power_plants['eur_co2_em_per_mwh']
+
+        output_unit_mw = 0.1
+        self.power_plants['max_units'] = self.power_plants['net_max_mwh'] / output_unit_mw
+        self.power_plants['min_units'] = self.power_plants['net_min_mwh'] / output_unit_mw
+        self.power_plants['target_units'] = self.power_plants['target_mwh'] / output_unit_mw
         logging.info(f'Staging data complete\n{self.power_plants}')
 
 
